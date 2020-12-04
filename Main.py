@@ -1,14 +1,17 @@
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
+from sklearn.model_selection import train_test_split
+from LinearRegression import *
+from NeuralNetwork import *
 
 
 df = pd.read_csv("tmdb_5000_movies.csv")
 columns = ['runtime', 'production_companies', 'genres', 'revenue', 'original_language', 'overview',
          'production_countries', 'release_date', 'vote_count', 'vote_average', 'title', 'tagline', 'budget']
+df = df.dropna(0, subset=['release_date', 'runtime'])
 df_x = df[columns]
 df_y = df[['popularity']]  # lable
-df_x = df_x.dropna(0, subset=['release_date'])
 
 
 """
@@ -39,12 +42,24 @@ def convert_to_numeric():  # need to convert it to isEnglish, isFranch ect.
         df_x[col] = df_x[col].map(lambda x: dict.get(x))
 
 
+def fix_nulls():
+    df_x['tagline'].fillna("", inplace=True)
+    df_x['overview'].fillna("", inplace=True)
+
+
 def main():
     split_date()
     convert_to_numeric()  # We will improve it later so that the values will be numerically better
+    fix_nulls()
+    print(df_x.isnull().sum())
     for col in df_x.columns:
         if not is_numeric_dtype(df_x[col]):
-            print(col)
+            # print(col)
+            del df_x[col]
+
+    X_train, X_test, y_train, y_test = train_test_split(df_x, df_y, test_size=0.2, random_state=1)
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)
+    linearRegression(X_train, y_train)
 
 
 if __name__ == '__main__':

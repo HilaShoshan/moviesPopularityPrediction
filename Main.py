@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+
 from LinearRegression import *
 from NeuralNetwork import *
 
@@ -47,19 +49,33 @@ def fix_nulls():
     df_x['overview'].fillna("", inplace=True)
 
 
+def normalize():
+    norm_df_x = (df_x - df_x.mean()) / df_x.std()
+    norm_df_y = (df_y - df_y.mean()) / df_y.std()
+    return norm_df_x, norm_df_y
+
+
 def main():
     split_date()
     convert_to_numeric()  # We will improve it later so that the values will be numerically better
     fix_nulls()
-    print(df_x.isnull().sum())
+    # print(df_x.isnull().sum())
+
     for col in df_x.columns:
         if not is_numeric_dtype(df_x[col]):
             # print(col)
             del df_x[col]
 
-    X_train, X_test, y_train, y_test = train_test_split(df_x, df_y, test_size=0.2, random_state=1)
+    norm_df_x, norm_df_y = normalize()
+
+    # split data to training set, testing set and validation set
+    X_train, X_test, y_train, y_test = train_test_split(norm_df_x, norm_df_y, test_size=0.2, random_state=1)
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)
-    linearRegression(X_train, y_train)
+
+    W, b = linearRegression(X_train, y_train)
+    y_pred = predict(W, b, X_test)
+    error = mean_squared_error(y_test, y_pred)
+    print(error)
 
 
 if __name__ == '__main__':

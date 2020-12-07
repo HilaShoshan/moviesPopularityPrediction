@@ -1,6 +1,5 @@
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
-import numpy as np
 
 
 def linearRegression(X_train, y_train):
@@ -21,10 +20,10 @@ def linearRegression(X_train, y_train):
     return sess.run(W), sess.run(b)
 
 
-def predict(W, b, X_test):
+def predict_linear(W, b, X_test):
     features = len(X_test.columns)
     x = tf.placeholder(tf.float32, [None, features])
-    y_ = tf.placeholder(tf.float32, [None, 1])
+    # y_ = tf.placeholder(tf.float32, [None, 1])
     y_pred = tf.matmul(x, W) + b
     sess = tf.Session()
     return sess.run(y_pred, feed_dict={x: X_test})

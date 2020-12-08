@@ -50,14 +50,20 @@ class ArrangeData:
         return norm_df_x, norm_df_y
 
 
+    def convert_with_nltk(self):
+        pass
+
+
     def arrange(self):
         self.split_date()
         self.convert_to_numeric()  # We will improve it later so that the values will be numerically better
         self.fix_nulls()
-        # print(df_x.isnull().sum())
+        # print(self.df_x.isnull().sum())
+        """
         for col in self.df_x.columns:
             if not is_numeric_dtype(self.df_x[col]):
                 # print(col)
                 del self.df_x[col]
+        """
         norm_df_x, norm_df_y = self.normalize()
         return norm_df_x, norm_df_y

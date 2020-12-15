@@ -22,12 +22,14 @@ def compute_error(y_real, y_pred):
 
 def main():
     data = ArrangeData(df, columns)
-    norm_df_x, norm_df_y = data.arrange()
+    data.arrange()
+    # norm_df_x, norm_df_y = data.arrange()
 
     # split data to training set, testing set and validation set
-    X_train, X_test, y_train, y_test = train_test_split(norm_df_x, norm_df_y, test_size=0.2, random_state=1)
+    # X_train, X_test, y_train, y_test = train_test_split(norm_df_x, norm_df_y, test_size=0.2, random_state=1)
     # X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)
 
+    """
     # Linear Regression Model
     print("Linear Regression Model")
     W, b = linearRegression(X_train, y_train)
@@ -45,13 +47,13 @@ def main():
     print("train:")
     print(linreg.score(X_train, y_train))
 
-    """
     # MLP Model
     print("MLP Model")
     W1, b1, W2, b2 = MLP(X_train, y_train)
     y_pred = predict_MLP(W1, b1, W2, b2, X_test)
     compute_error(y_test, y_pred)
-"""
+    """
+
 
 if __name__ == '__main__':
     main()

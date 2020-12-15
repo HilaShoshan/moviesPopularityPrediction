@@ -8,7 +8,8 @@ class ArrangeData:
     df_y = 0
 
     def __init__(self, df, columns):
-        df = df.dropna(0, subset=['release_date', 'runtime'])
+        df.dropna(0, subset=['release_date', 'runtime'], inplace=True)
+        df.reset_index(drop=True, inplace=True)
         self.df_x = df[columns]
         self.df_y = df[['popularity']]  # lable
 
@@ -52,7 +53,7 @@ class ArrangeData:
     def encode_categorical_list_cols(self):
         new_df = pd.DataFrame(columns=[], index=range(self.df_x.shape[0]))  # create an empty DataFrame
         for col in ['production_companies', 'genres', 'production_countries']:  # the relevant columns
-            index = 0
+            index = -1
             for list in self.df_x[col]:  # its not really a list, but a string
                 index += 1
                 if len(list) == 2:  # empty list: []
@@ -68,6 +69,7 @@ class ArrangeData:
                     new_df.at[index, col_name] = 1
         new_df.fillna(0, inplace=True)
         self.df_x.drop(['production_companies', 'genres', 'production_countries'], axis=1, inplace=True)
+        self.df_x = pd.concat([self.df_x, new_df], axis=1)
 
 
     def getItems(self, organ, col):
@@ -107,18 +109,14 @@ class ArrangeData:
 
     def arrange(self):
         self.split_date()
-        # self.label_encoding()
-        self.one_hot_encoding()
-        self.encode_categorical_list_cols()
-        # print(self.df_x.columns)
-        """
         self.fix_nulls()
         # print(self.df_x.isnull().sum())
+        self.one_hot_encoding()
+        self.encode_categorical_list_cols()
         self.convert_with_nltk()  # should replace the for loop
         for col in self.df_x.columns:
             if not is_numeric_dtype(self.df_x[col]):
-                print(col)
+                # print(col)
                 del self.df_x[col]
         norm_df_x, norm_df_y = self.normalize()
         return norm_df_x, norm_df_y
-        """

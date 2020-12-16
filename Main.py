@@ -46,13 +46,12 @@ def main():
     print("train:")
     print(linreg.score(X_train, y_train))
 
-    """
     # MLP Model
     print("MLP Model")
-    W1, b1, W2, b2 = MLP(X_train, y_train)
+    W1, b1, W2, b2 = train_MLP(X_train, y_train)
     y_pred = predict_MLP(W1, b1, W2, b2, X_test)
     compute_error(y_test, y_pred)
-    """
+
 
 
 if __name__ == '__main__':

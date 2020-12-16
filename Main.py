@@ -14,26 +14,25 @@ columns = ['runtime', 'production_companies', 'genres', 'revenue', 'original_lan
          'production_countries', 'release_date', 'vote_count', 'vote_average', 'title', 'tagline', 'budget']
 
 
-def compute_error(y_real, y_pred):
-    # print(metrics.accuracy_score(y_test, y_pred))
-    # print(metrics.confusion_matrix(y_test, y_pred))
+def compute_error(y_real, y_pred):  # The mean squared error
+    print("Mean squared error: ", np.mean(y_pred - y_real) ** 2)
     print(mean_squared_error(y_real, y_pred))
 
 
 def main():
     data = ArrangeData(df, columns)
-    data.arrange()
-    # norm_df_x, norm_df_y = data.arrange()
+    norm_df_x, norm_df_y = data.arrange()
 
     # split data to training set, testing set and validation set
-    # X_train, X_test, y_train, y_test = train_test_split(norm_df_x, norm_df_y, test_size=0.2, random_state=1)
+
+    X_train, X_test, y_train, y_test = train_test_split(norm_df_x, norm_df_y, test_size=0.2, random_state=1)
     # X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)
 
-    """
     # Linear Regression Model
+
     print("Linear Regression Model")
-    W, b = linearRegression(X_train, y_train)
-    y_pred = predict_linear(W, b, X_test)
+    W, b = train_linreg(X_train, y_train)
+    y_pred = predict_linreg(W, b, X_test)
     print("mine:")
     compute_error(y_test, y_pred)
 
@@ -47,6 +46,7 @@ def main():
     print("train:")
     print(linreg.score(X_train, y_train))
 
+    """
     # MLP Model
     print("MLP Model")
     W1, b1, W2, b2 = MLP(X_train, y_train)

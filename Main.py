@@ -31,7 +31,7 @@ def main():
     # Linear Regression Model
 
     print("Linear Regression Model")
-    W, b = train_linreg(X_train, y_train)
+    W, b = train_linreg(X_train, y_train, X_test, y_test)
     y_pred = predict_linreg(W, b, X_test)
     print("mine:")
     compute_error(y_test, y_pred)

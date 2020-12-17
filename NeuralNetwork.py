@@ -22,6 +22,8 @@ def train_NN(X_train, y_train, X_test, y_test):
     sess = tf.Session()
     sess.run(init)
     error = tf.cast(loss, tf.float32)
+    train_err = []
+    test_err = []
     for i in range(50):
         shuffle_x = X_train.sample(frac=1)
         shuffle_y = y_train.reindex(list(shuffle_x.index.values))
@@ -31,7 +33,10 @@ def train_NN(X_train, y_train, X_test, y_test):
             batch_y = shuffle_y.take(range(j - 121, min(j, length)))
             sess.run(train_step, feed_dict={x: batch_x, y_: batch_y})
         print(i, sess.run(error, feed_dict={x: X_test, y_: y_test}))
-    return sess.run(W1), sess.run(b1), sess.run(W2), sess.run(b2), sess.run(W3), sess.run(b3)
+        train_err.append(sess.run(error, feed_dict={x: X_train, y_: y_train}))
+        test_err.append(sess.run(error, feed_dict={x: X_test, y_: y_test}))
+    epochs = [*range(50)]
+    return sess.run(W1), sess.run(b1), sess.run(W2), sess.run(b2), sess.run(W3), sess.run(b3), epochs, train_err, test_err
 
 
 def predict_NN(W1, b1, W2, b2, W3, b3, X_test):

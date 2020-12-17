@@ -1,5 +1,6 @@
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
 
 from LinearRegression import *
 from ArrangeData import *
@@ -19,6 +20,16 @@ def compute_error(y_real, y_pred):  # The mean squared error
     print(mean_squared_error(y_real, y_pred))
 
 
+def plot_err(epochs, train_err, test_err):
+    plt.xlabel('epochs')
+    plt.ylabel('prediction error')
+    plt.title('Train/Test error')
+    plt.plot(epochs, train_err, color='blue', linewidth = 3,  label = 'train error')
+    plt.plot(epochs, test_err, color='red', linewidth = 5,  label = 'test error')
+    plt.legend()
+    plt.show()
+
+
 def main():
     data = ArrangeData(df, columns)
     norm_df_x, norm_df_y = data.arrange()
@@ -31,11 +42,13 @@ def main():
     # Linear Regression Model
 
     print("Linear Regression Model")
-    W, b = train_linreg(X_train, y_train, X_test, y_test)
+    W, b, epochs, train_err, test_err = train_linreg(X_train, y_train, X_test, y_test)
     y_pred = predict_linreg(W, b, X_test)
     print("mine:")
     compute_error(y_test, y_pred)
+    plot_err(epochs, train_err, test_err)
 
+    """
     linreg = LinearRegression()
     linreg.fit(X_train, y_train)
     y_pred = linreg.predict(X_test)
@@ -45,18 +58,21 @@ def main():
     print(linreg.score(X_test, y_test))
     print("train:")
     print(linreg.score(X_train, y_train))
+    """
 
     # MLP Model
     print("MLP Model")
-    W1, b1, W2, b2 = train_MLP(X_train, y_train)
+    W1, b1, W2, b2, epochs, train_err, test_err = train_MLP(X_train, y_train, X_test, y_test)
     y_pred = predict_MLP(W1, b1, W2, b2, X_test)
     compute_error(y_test, y_pred)
+    plot_err(epochs, train_err, test_err)
 
     # NN Model
     print("NN Model")
-    W1, b1, W2, b2, W3, b3 = train_NN(X_train, y_train, X_test, y_test)
+    W1, b1, W2, b2, W3, b3, epochs, train_err, test_err = train_NN(X_train, y_train, X_test, y_test)
     y_pred = predict_NN(W1, b1, W2, b2, W3, b3, X_test)
     compute_error(y_test, y_pred)
+    plot_err(epochs, train_err, test_err)
 
 
 if __name__ == '__main__':

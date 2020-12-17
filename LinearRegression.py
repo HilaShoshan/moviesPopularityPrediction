@@ -1,6 +1,5 @@
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
-import matplotlib.pyplot as plt
 
 
 def train_linreg(X_train, y_train, X_test, y_test):
@@ -27,24 +26,13 @@ def train_linreg(X_train, y_train, X_test, y_test):
         print('Iteration:', i, ' W:', sess.run(W), ' b:', sess.run(b), ' loss:', loss.eval(session=sess, feed_dict={x: X_train, y_: y_train}))
         train_err.append(loss.eval(session=sess, feed_dict = {x:X_train, y_:y_train}))
         test_err.append(loss.eval(session=sess, feed_dict = {x:X_test, y_:y_test}))
-    plot_err([*range(50)], train_err, test_err)
-    return sess.run(W), sess.run(b)
-
-
-def plot_err(epochs, train_err, test_err):
-    plt.xlabel('epochs')
-    plt.ylabel('prediction error')
-    plt.title('Train/Test error')
-    plt.plot(epochs, train_err, color='blue', linewidth = 3,  label = 'train error')
-    plt.plot(epochs, test_err, color='red', linewidth = 5,  label = 'test error')
-    plt.legend()
-    plt.show()
+    epochs = [*range(50)]
+    return sess.run(W), sess.run(b), epochs, train_err, test_err
 
 
 def predict_linreg(W, b, X_test):
     features = len(X_test.columns)
     x = tf.placeholder(tf.float32, [None, features])
-    # y_ = tf.placeholder(tf.float32, [None, 1])
     y_pred = tf.matmul(x, W) + b
     sess = tf.Session()
     return sess.run(y_pred, feed_dict={x: X_test})

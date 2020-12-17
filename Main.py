@@ -30,8 +30,10 @@ def plot_err(epochs, train_err, test_err):
     plt.show()
 
 
-def compareToAvgBaseline():
-    pass
+def avg_baseline_pred(y_train, shape):
+    train_avg = y_train.mean(axis=0)
+    avg_pred = np.full(shape, train_avg)
+    return avg_pred
 
 
 def main():
@@ -43,13 +45,18 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(norm_df_x, df_y, test_size=0.2, random_state=1)
     # X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)
 
+    """
     # Linear Regression Model
     print("Linear Regression Model")
     W, b, epochs, train_err, test_err = train_linreg(X_train, y_train, X_test, y_test)
     y_pred = predict_linreg(W, b, X_test)
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err)
-    compareToAvgBaseline()
+    """
+    # Compare to the average baseline:
+    print("Average Baseline")
+    avg_pred = avg_baseline_pred(y_train, y_test.shape)
+    compute_error(y_test, avg_pred)
 
 
     """

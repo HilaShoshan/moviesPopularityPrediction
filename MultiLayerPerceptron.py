@@ -20,7 +20,7 @@ def train_MLP(X_train, y_train, X_test, y_test):
     sess.run(tf.global_variables_initializer())
     train_err = []
     test_err = []
-    for i in range(50):
+    for i in range(39):
         shuffle_x = X_train.sample(frac=1)
         shuffle_y = y_train.reindex(list(shuffle_x.index.values))
         length = len(shuffle_x)
@@ -30,7 +30,7 @@ def train_MLP(X_train, y_train, X_test, y_test):
             sess.run(update, feed_dict={x: batch_x, y_: batch_y})
         train_err.append(loss.eval(session=sess, feed_dict={x: X_train, y_: y_train}))
         test_err.append(loss.eval(session=sess, feed_dict={x: X_test, y_: y_test}))
-    epochs = [*range(50)]
+    epochs = [*range(39)]
     return sess.run(W1), sess.run(b1), sess.run(W2), sess.run(b2), epochs, train_err, test_err
 
 

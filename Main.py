@@ -25,7 +25,7 @@ def plot_err(epochs, train_err, test_err):
     plt.ylabel('prediction error')
     plt.title('Train/Test error')
     plt.plot(epochs, train_err, color='blue', linewidth = 3,  label = 'train error')
-    plt.plot(epochs, test_err, color='red', linewidth = 5,  label = 'test error')
+    plt.plot(epochs, test_err, color='red', linewidth = 3,  label = 'test error')
     plt.legend()
     plt.show()
 
@@ -52,14 +52,12 @@ def main():
     y_pred = predict_linreg(W, b, X_test)
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err)
-    """
+    
     # Compare to the average baseline:
     print("Average Baseline")
     avg_pred = avg_baseline_pred(y_train, y_test.shape)
     compute_error(y_test, avg_pred)
 
-
-    """
     # MLP Model
     print("MLP Model")
     W1, b1, W2, b2, epochs, train_err, test_err = train_MLP(X_train, y_train, X_test, y_test)
@@ -67,13 +65,14 @@ def main():
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err)
 
+    """
     # NN Model
     print("NN Model")
-    W1, b1, W2, b2, W3, b3, epochs, train_err, test_err = train_NN(X_train, y_train, X_test, y_test)
+    W1, b1, W2, b2, W3, b3, epochs, train_err, test_err = train_NN(X_train, y_train, X_test, y_test, "ridge")
     y_pred = predict_NN(W1, b1, W2, b2, W3, b3, X_test)
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err)
-    """
+
 
 if __name__ == '__main__':
     main()

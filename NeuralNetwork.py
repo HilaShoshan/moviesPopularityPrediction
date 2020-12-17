@@ -2,7 +2,7 @@ import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 
 
-def train_NN(X_train, y_train, X_test, y_test):
+def train_NN(X_train, y_train, X_test, y_test, regularization=None):
     features = len(X_train.columns)
     (hidden1_size, hidden2_size) = (100, 50)
     x = tf.placeholder(tf.float32, [None, features])
@@ -16,15 +16,19 @@ def train_NN(X_train, y_train, X_test, y_test):
     W3 = tf.Variable(tf.truncated_normal([hidden2_size, 1], stddev=0.1))
     b3 = tf.Variable(tf.constant(0.1, shape=[1]))
     y = tf.matmul(z2, W3) + b3
-    loss = tf.reduce_mean(tf.pow(y - y_, 2))
-    train_step = tf.train.GradientDescentOptimizer(0.001).minimize(loss)
+    if regularization is None:
+        loss = tf.reduce_mean(tf.pow(y - y_, 2))
+    elif regularization == "lasso":
+        loss = tf.reduce_mean(tf.pow(y - y_, 2)) + 0.1*tf.reduce_sum(tf.abs(W3))
+    else:  # regularization == "ridge"
+        loss = tf.reduce_mean(tf.pow(y - y_, 2)) + 0.1 * tf.nn.l2_loss(W3)
+    train_step = tf.train.GradientDescentOptimizer(0.0001).minimize(loss)
     init = tf.global_variables_initializer()
     sess = tf.Session()
     sess.run(init)
-    error = tf.cast(loss, tf.float32)
     train_err = []
     test_err = []
-    for i in range(50):
+    for i in range(10):
         shuffle_x = X_train.sample(frac=1)
         shuffle_y = y_train.reindex(list(shuffle_x.index.values))
         length = len(shuffle_x)
@@ -32,10 +36,10 @@ def train_NN(X_train, y_train, X_test, y_test):
             batch_x = shuffle_x.take(range(j - 121, min(j, length)))
             batch_y = shuffle_y.take(range(j - 121, min(j, length)))
             sess.run(train_step, feed_dict={x: batch_x, y_: batch_y})
-        print(i, sess.run(error, feed_dict={x: X_test, y_: y_test}))
-        train_err.append(sess.run(error, feed_dict={x: X_train, y_: y_train}))
-        test_err.append(sess.run(error, feed_dict={x: X_test, y_: y_test}))
-    epochs = [*range(50)]
+        print(i, sess.run(loss, feed_dict={x: X_test, y_: y_test}))
+        train_err.append(sess.run(loss, feed_dict={x: X_train, y_: y_train}))
+        test_err.append(sess.run(loss, feed_dict={x: X_test, y_: y_test}))
+    epochs = [*range(10)]
     return sess.run(W1), sess.run(b1), sess.run(W2), sess.run(b2), sess.run(W3), sess.run(b3), epochs, train_err, test_err
 
 

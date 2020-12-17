@@ -15,7 +15,7 @@ def train_linreg(X_train, y_train, X_test, y_test):
     sess.run(tf.global_variables_initializer())
     train_err = []
     test_err = []
-    for i in range(50):
+    for i in range(7):
         shuffle_x = X_train.sample(frac=1)
         shuffle_y = y_train.reindex(list(shuffle_x.index.values))
         length = len(shuffle_x)
@@ -26,7 +26,7 @@ def train_linreg(X_train, y_train, X_test, y_test):
         print('Iteration:', i, ' W:', sess.run(W), ' b:', sess.run(b), ' loss:', loss.eval(session=sess, feed_dict={x: X_train, y_: y_train}))
         train_err.append(loss.eval(session=sess, feed_dict = {x:X_train, y_:y_train}))
         test_err.append(loss.eval(session=sess, feed_dict = {x:X_test, y_:y_test}))
-    epochs = [*range(50)]
+    epochs = [*range(7)]
     return sess.run(W), sess.run(b), epochs, train_err, test_err
 
 

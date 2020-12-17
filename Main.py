@@ -1,5 +1,5 @@
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 import matplotlib.pyplot as plt
 
 from LinearRegression import *
@@ -16,8 +16,8 @@ columns = ['runtime', 'production_companies', 'genres', 'revenue', 'original_lan
 
 
 def compute_error(y_real, y_pred):  # The mean squared error
-    print("Mean squared error: ", np.mean(y_pred - y_real) ** 2)
-    print(mean_squared_error(y_real, y_pred))
+    print("MSE:", mean_squared_error(y_real, y_pred))
+    print("MAE:", mean_absolute_error(y_real, y_pred))
 
 
 def plot_err(epochs, train_err, test_err):
@@ -30,36 +30,29 @@ def plot_err(epochs, train_err, test_err):
     plt.show()
 
 
+def compareToAvgBaseline():
+    pass
+
+
 def main():
     data = ArrangeData(df, columns)
-    norm_df_x, norm_df_y = data.arrange()
+    norm_df_x, df_y = data.arrange()
 
     # split data to training set, testing set and validation set
 
-    X_train, X_test, y_train, y_test = train_test_split(norm_df_x, norm_df_y, test_size=0.2, random_state=1)
+    X_train, X_test, y_train, y_test = train_test_split(norm_df_x, df_y, test_size=0.2, random_state=1)
     # X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)
 
     # Linear Regression Model
-
     print("Linear Regression Model")
     W, b, epochs, train_err, test_err = train_linreg(X_train, y_train, X_test, y_test)
     y_pred = predict_linreg(W, b, X_test)
-    print("mine:")
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err)
+    compareToAvgBaseline()
+
 
     """
-    linreg = LinearRegression()
-    linreg.fit(X_train, y_train)
-    y_pred = linreg.predict(X_test)
-    print("sklearn:")
-    compute_error(y_test, y_pred)
-    print("test:")
-    print(linreg.score(X_test, y_test))
-    print("train:")
-    print(linreg.score(X_train, y_train))
-    """
-
     # MLP Model
     print("MLP Model")
     W1, b1, W2, b2, epochs, train_err, test_err = train_MLP(X_train, y_train, X_test, y_test)
@@ -73,7 +66,7 @@ def main():
     y_pred = predict_NN(W1, b1, W2, b2, W3, b3, X_test)
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err)
-
+    """
 
 if __name__ == '__main__':
     main()

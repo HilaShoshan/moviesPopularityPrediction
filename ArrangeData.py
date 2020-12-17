@@ -103,8 +103,7 @@ class ArrangeData:
 
     def normalize(self):
         norm_df_x = (self.df_x - self.df_x.mean()) / self.df_x.std()
-        norm_df_y = (self.df_y - self.df_y.mean()) / self.df_y.std()
-        return norm_df_x, norm_df_y
+        return norm_df_x
 
 
     def arrange(self):
@@ -118,5 +117,5 @@ class ArrangeData:
             if not is_numeric_dtype(self.df_x[col]):
                 # print(col)
                 del self.df_x[col]
-        norm_df_x, norm_df_y = self.normalize()
-        return norm_df_x, norm_df_y
+        norm_df_x = self.normalize()
+        return norm_df_x, self.df_y

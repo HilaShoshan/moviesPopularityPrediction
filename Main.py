@@ -1,10 +1,10 @@
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
-from sklearn import metrics
 
 from LinearRegression import *
 from ArrangeData import *
 from MultiLayerPerceptron import *
+from NeuralNetwork import *
 
 from sklearn.linear_model import LinearRegression
 
@@ -52,6 +52,11 @@ def main():
     y_pred = predict_MLP(W1, b1, W2, b2, X_test)
     compute_error(y_test, y_pred)
 
+    # NN Model
+    print("NN Model")
+    W1, b1, W2, b2, W3, b3 = train_NN(X_train, y_train, X_test, y_test)
+    y_pred = predict_NN(W1, b1, W2, b2, W3, b3, X_test)
+    compute_error(y_test, y_pred)
 
 
 if __name__ == '__main__':

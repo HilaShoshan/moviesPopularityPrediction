@@ -47,7 +47,7 @@ def main():
     # split data to training set, testing set and validation set
 
     X_train, X_test, y_train, y_test = train_test_split(norm_df_x, df_y, test_size=0.2, random_state=1)
-    # X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)
+    # X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)  # 0.25 x 0.8 = 0.2
 
     """
     # Linear Regression Model
@@ -72,8 +72,8 @@ def main():
 
     # NN Model
     print("NN Model")
-    W1, b1, W2, b2, W3, b3, epochs, train_err, test_err = train_NN(X_train, y_train, X_test, y_test, "lasso")
-    y_pred = predict_NN(W1, b1, W2, b2, W3, b3, X_test)
+    Ws, biases, epochs, train_err, test_err = train_NN(X_train, y_train, X_test, y_test, regularization="lasso")
+    y_pred = predict_NN(Ws, biases, X_test)
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err, "NN with 2 hidden layers")
 

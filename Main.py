@@ -47,9 +47,8 @@ def main():
     # split data to training set, testing set and validation set
 
     X_train, X_test, y_train, y_test = train_test_split(norm_df_x, df_y, test_size=0.2, random_state=1)
-    # X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)  # 0.25 x 0.8 = 0.2
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)  # 0.25 x 0.8 = 0.2
 
-    """
     # Linear Regression Model
     print("Linear Regression Model")
     W, b, epochs, train_err, test_err = train_linreg(X_train, y_train, X_test, y_test, "ridge")
@@ -61,18 +60,10 @@ def main():
     print("Average Baseline")
     avg_pred = avg_baseline_pred(y_train, y_test.shape)
     compute_error(y_test, avg_pred)
-    
-    # MLP Model
-    print("MLP Model")
-    W1, b1, W2, b2, epochs, train_err, test_err = train_MLP(X_train, y_train, X_test, y_test)
-    y_pred = predict_MLP(W1, b1, W2, b2, X_test)
-    compute_error(y_test, y_pred)
-    plot_err(epochs, train_err, test_err, "MLP")
-    """
 
     # NN Model
     print("NN Model")
-    Ws, biases, epochs, train_err, test_err = train_NN(X_train, y_train, X_test, y_test, regularization="lasso")
+    Ws, biases, epochs, train_err, test_err = train_NN(X_train, y_train, X_test, y_test)
     y_pred = predict_NN(Ws, biases, X_test)
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err, "NN with 2 hidden layers")

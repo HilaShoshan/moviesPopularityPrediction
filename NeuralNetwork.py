@@ -5,7 +5,7 @@ tf.disable_v2_behavior()
 def train_NN(X_train, y_train, X_test, y_test, num_epochs=50, num_hidden_layers=2, hidden_sizes=(100,50), regularization=None, optimizer=None):
     """
     implements a multi-layers neural network with the given parameters.
-    :param hidden_sizes: a tuple of size num_hidden_layer param, that represents the number of neurons of each layer.
+    :param hidden_sizes: a tuple or list of size num_hidden_layer param, that represents the number of neurons of each layer.
     :return: the weights and biases after training,
                 and lists of epochs, train error and test error for plotting a graph on main
     """

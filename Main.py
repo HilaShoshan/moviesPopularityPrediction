@@ -2,9 +2,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import matplotlib.pyplot as plt
 
-from LinearRegression import *
 from ArrangeData import *
-from MultiLayerPerceptron import *
+from LinearRegression import *
 from NeuralNetwork import *
 
 from sklearn.linear_model import LinearRegression
@@ -40,6 +39,12 @@ def avg_baseline_pred(y_train, shape):
     return avg_pred
 
 
+def show_lable_statistics(label):
+    print(label.describe())
+    label.plot(kind='hist', figsize=(8, 8))
+    plt.show()
+
+
 def main():
     data = ArrangeData(df, columns)
     norm_df_x, df_y = data.arrange()
@@ -48,7 +53,7 @@ def main():
 
     X_train, X_test, y_train, y_test = train_test_split(norm_df_x, df_y, test_size=0.2, random_state=1)
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)  # 0.25 x 0.8 = 0.2
-
+    """
     # Linear Regression Model
     print("Linear Regression Model")
     W, b, epochs, train_err, test_err = train_linreg(X_train, y_train, X_test, y_test, "ridge")
@@ -67,6 +72,10 @@ def main():
     y_pred = predict_NN(Ws, biases, X_test)
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err, "NN with 2 hidden layers")
+    """
+    print("y_test mean:", y_test.mean(axis=0))
+    print("y_train mean:", y_train.mean(axis=0))
+    # show_lable_statistics(df_y)
 
 
 if __name__ == '__main__':

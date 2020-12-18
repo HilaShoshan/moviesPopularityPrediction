@@ -23,18 +23,18 @@ def train_NN(X_train, y_train, X_test, y_test, regularization=None, optimizer=No
     sess.run(init)
     train_err = []
     test_err = []
-    for i in range(10):
+    for i in range(100):
         shuffle_x = X_train.sample(frac=1)
         shuffle_y = y_train.reindex(list(shuffle_x.index.values))
         length = len(shuffle_x)
         for j in range(121, length + 2, 120):
-            batch_x = shuffle_x.take(range(j - 121, min(j, length)))
-            batch_y = shuffle_y.take(range(j - 121, min(j, length)))
+            batch_x = shuffle_x.iloc[j - 121:min(j, length), :]
+            batch_y = shuffle_y.iloc[j - 121:min(j, length), :]
             sess.run(train_step, feed_dict={x: batch_x, y_: batch_y})
         print(i, sess.run(loss, feed_dict={x: X_test, y_: y_test}))
         train_err.append(sess.run(loss, feed_dict={x: X_train, y_: y_train}))
         test_err.append(sess.run(loss, feed_dict={x: X_test, y_: y_test}))
-    epochs = [*range(10)]
+    epochs = [*range(100)]
     return sess.run(W1), sess.run(b1), sess.run(W2), sess.run(b2), sess.run(W3), sess.run(b3), epochs, train_err, test_err
 
 

@@ -16,14 +16,18 @@ columns = ['runtime', 'production_companies', 'genres', 'revenue', 'original_lan
 
 
 def compute_error(y_real, y_pred):  # The mean squared error
-    print("MSE:", mean_squared_error(y_real, y_pred))
+    mse = mean_squared_error(y_real, y_pred)
+    rmse = np.sqrt(mse)
+    print("MSE:", mse)
     print("MAE:", mean_absolute_error(y_real, y_pred))
+    print("rMSE:", rmse)
+    print("R^2 score:", 1-rmse)
 
 
-def plot_err(epochs, train_err, test_err):
+def plot_err(epochs, train_err, test_err, model_name):
     plt.xlabel('epochs')
     plt.ylabel('prediction error')
-    plt.title('Train/Test error')
+    plt.title('Train/Test error '+model_name)
     plt.plot(epochs, train_err, color='blue', linewidth = 3,  label = 'train error')
     plt.plot(epochs, test_err, color='red', linewidth = 3,  label = 'test error')
     plt.legend()
@@ -45,34 +49,34 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(norm_df_x, df_y, test_size=0.2, random_state=1)
     # X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)
 
+    """
     # Linear Regression Model
     print("Linear Regression Model")
-    W, b, epochs, train_err, test_err = train_linreg(X_train, y_train, X_test, y_test, None, "adam")
+    W, b, epochs, train_err, test_err = train_linreg(X_train, y_train, X_test, y_test, "ridge")
     y_pred = predict_linreg(W, b, X_test)
     compute_error(y_test, y_pred)
-    plot_err(epochs, train_err, test_err)
+    plot_err(epochs, train_err, test_err, "Linear Regression")
 
-    """
     # Compare to the average baseline:
     print("Average Baseline")
     avg_pred = avg_baseline_pred(y_train, y_test.shape)
     compute_error(y_test, avg_pred)
-
+    
     # MLP Model
     print("MLP Model")
     W1, b1, W2, b2, epochs, train_err, test_err = train_MLP(X_train, y_train, X_test, y_test)
     y_pred = predict_MLP(W1, b1, W2, b2, X_test)
     compute_error(y_test, y_pred)
-    plot_err(epochs, train_err, test_err)
+    plot_err(epochs, train_err, test_err, "MLP")
+    """
 
-    
     # NN Model
     print("NN Model")
-    W1, b1, W2, b2, W3, b3, epochs, train_err, test_err = train_NN(X_train, y_train, X_test, y_test, None, "adam")
+    W1, b1, W2, b2, W3, b3, epochs, train_err, test_err = train_NN(X_train, y_train, X_test, y_test, "lasso")
     y_pred = predict_NN(W1, b1, W2, b2, W3, b3, X_test)
     compute_error(y_test, y_pred)
-    plot_err(epochs, train_err, test_err)
-"""
+    plot_err(epochs, train_err, test_err, "NN with 2 hidden layers")
+
 
 if __name__ == '__main__':
     main()

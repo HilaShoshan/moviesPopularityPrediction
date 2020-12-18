@@ -15,18 +15,20 @@ def train_linreg(X_train, y_train, X_test, y_test, regularization=None, optimize
     sess.run(tf.global_variables_initializer())
     train_err = []
     test_err = []
-    for i in range(7):
+    for i in range(50):
         shuffle_x = X_train.sample(frac=1)
         shuffle_y = y_train.reindex(list(shuffle_x.index.values))
         length = len(shuffle_x)
         for j in range(121, length+2, 120):
-            batch_x = shuffle_x.take(range(j-121, min(j,length)))
-            batch_y = shuffle_y.take(range(j-121, min(j,length)))
+            batch_x = shuffle_x.iloc[j-121:min(j, length),:]
+            batch_y = shuffle_y.iloc[j-121:min(j, length),:]
             sess.run(update, feed_dict={x: batch_x, y_: batch_y})
-        print('Iteration:', i, ' W:', sess.run(W), ' b:', sess.run(b), ' loss:', loss.eval(session=sess, feed_dict={x: X_train, y_: y_train}))
+        print('Iteration:', i, ' W:', sess.run(W), ' b:', sess.run(b),
+              ' train loss:', loss.eval(session=sess, feed_dict={x: X_train, y_: y_train}),
+              ' test loss:', loss.eval(session=sess, feed_dict={x: X_test, y_: y_test}))
         train_err.append(loss.eval(session=sess, feed_dict = {x:X_train, y_:y_train}))
         test_err.append(loss.eval(session=sess, feed_dict = {x:X_test, y_:y_test}))
-    epochs = [*range(7)]
+    epochs = [*range(50)]
     return sess.run(W), sess.run(b), epochs, train_err, test_err
 
 

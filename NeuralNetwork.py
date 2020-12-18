@@ -2,7 +2,7 @@ import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 
 
-def train_NN(X_train, y_train, X_test, y_test, num_epochs=50, num_hidden_layers=2, hidden_sizes=(100,50), regularization=None, optimizer=None):
+def train_NN(X_train, y_train, X_test, y_test, num_epochs=50, num_hidden_layers=2, hidden_sizes=(100,50), regularization=None, early_stopping=False, optimizer=None):
     """
     implements a multi-layers neural network with the given parameters.
     :param hidden_sizes: a tuple or list of size num_hidden_layer param, that represents the number of neurons of each layer.
@@ -29,9 +29,14 @@ def train_NN(X_train, y_train, X_test, y_test, num_epochs=50, num_hidden_layers=
 
     train_err = []
     test_err = []
-    epochs = [*range(num_epochs)]
 
-    for i in range(num_epochs):
+    # for early stopping
+    require_improvement = 5
+    stop = False
+    last_improvement = 0  # saves the index of the last epoch where the loss has decreased
+
+    i = 0  # counter for epochs
+    while i < num_epochs and not stop:
         shuffle_x = X_train.sample(frac=1)
         shuffle_y = y_train.reindex(list(shuffle_x.index.values))
         length = len(shuffle_x)
@@ -42,7 +47,11 @@ def train_NN(X_train, y_train, X_test, y_test, num_epochs=50, num_hidden_layers=
         print(i, "train loss: ", sess.run(loss, feed_dict={x: X_train, y_: y_train}), "test loss: ", sess.run(loss, feed_dict={x: X_test, y_: y_test}))
         train_err.append(sess.run(loss, feed_dict={x: X_train, y_: y_train}))
         test_err.append(sess.run(loss, feed_dict={x: X_test, y_: y_test}))
+        if early_stopping:
+            stop, last_improvement = check_improvement(i, last_improvement, require_improvement, test_err)
+        i += 1
 
+    epochs = [*range(i)]
     ret_W = []
     ret_b = []
     for i in range(len(Ws)):
@@ -103,6 +112,21 @@ def get_train_step(optimizer, loss):
     else:  # optimizer = "adam"
         train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
     return train_step
+
+
+def check_improvement(i, last_improvement, require_improvement, test_err):
+    """
+        used on early_stopping
+    """
+    improvement_epoch = last_improvement
+    stop = False
+    if i > 0:
+        if test_err[i] < test_err[i-1]:  # there is an improvement
+            improvement_epoch = i
+        else:  # if not, check how many time there was not an improvement
+            if i >= require_improvement and last_improvement <= i - require_improvement:
+                stop = True
+    return stop, improvement_epoch
 
 
 def predict_NN(Ws, biases, X_test):

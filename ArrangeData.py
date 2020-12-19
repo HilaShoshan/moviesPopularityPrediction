@@ -52,6 +52,14 @@ class ArrangeData:
                 i += 1
             self.df_x[col] = self.df_x[col].map(lambda x: dict.get(x))
 
+    def one_hot_encoding(self):
+        """
+            using for original_language column
+        """
+        language_encoding = pd.get_dummies(self.df_x['original_language'], prefix='is')
+        self.df_x = pd.concat([self.df_x, language_encoding], axis=1)
+        del self.df_x['original_language']
+
     def language_encoding(self):
         self.df_x['isEnglish'] = self.df_x['original_language'].apply(lambda x: 1 if x == 'en' else 0)
         del self.df_x['original_language']
@@ -93,15 +101,9 @@ class ArrangeData:
                 items.append(organ.split('"iso_3166_1": "')[-1].replace('", ', ''))
         return items
 
-    def fix_nulls(self):  # **
+    def fix_nulls(self):  # not in use
         self.df_x['tagline'].fillna("", inplace=True)
         self.df_x['overview'].fillna("", inplace=True)
-
-    def convert_with_nltk(self):  # **
-        """
-            a method using to convert overview, title and tagline columns to numeric
-        """
-        pass
 
     def normalize(self):
         norm_df_x = (self.df_x - self.df_x.mean()) / self.df_x.std()
@@ -111,7 +113,6 @@ class ArrangeData:
         self.split_date()
         self.language_encoding()
         self.encode_categorical_list_cols()
-        self.convert_with_nltk()  # should replace the for loop
         for col in self.df_x.columns:
             if not is_numeric_dtype(self.df_x[col]):
                 # print(col)

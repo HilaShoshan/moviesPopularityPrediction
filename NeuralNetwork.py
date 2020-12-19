@@ -31,7 +31,7 @@ def train_NN(X_train, y_train, X_test, y_test, num_epochs=50, num_hidden_layers=
     test_err = []
 
     # for early stopping
-    require_improvement = 5
+    require_improvement = 10
     stop = False
     last_improvement = 0  # saves the index of the last epoch where the loss has decreased
 
@@ -40,7 +40,7 @@ def train_NN(X_train, y_train, X_test, y_test, num_epochs=50, num_hidden_layers=
         shuffle_x = X_train.sample(frac=1)
         shuffle_y = y_train.reindex(list(shuffle_x.index.values))
         length = len(shuffle_x)
-        for j in range(121, length + 2, 120):
+        for j in range(121, length + 120, 120):
             batch_x = shuffle_x.iloc[j - 121:min(j, length), :]
             batch_y = shuffle_y.iloc[j - 121:min(j, length), :]
             sess.run(train_step, feed_dict={x: batch_x, y_: batch_y})

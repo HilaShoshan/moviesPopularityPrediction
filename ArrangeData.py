@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from pandas.api.types import is_numeric_dtype
+import matplotlib.pyplot as plt
+
 
 class ArrangeData:
 
@@ -8,11 +10,22 @@ class ArrangeData:
     df_y = 0
 
     def __init__(self, df, columns):
-        df.dropna(0, subset=['release_date', 'runtime'], inplace=True)
-        df.reset_index(drop=True, inplace=True)
+        df = self.remove_bad_vals(df)
         self.df_x = df[columns]
-        self.df_y = df[['popularity']]  # lable
+        self.df_y = df[['popularity']]  # label
+        # self.show_lable_statistics()
 
+    def remove_bad_vals(self, df):
+        df.dropna(0, subset=['release_date', 'runtime'], inplace=True)
+        df = df[df['vote_count'] >= 10]
+        df = df[df['runtime'] != 0.0]
+        df.reset_index(drop=True, inplace=True)
+        return df
+
+    def show_lable_statistics(self):
+        print(self.df_y.describe())
+        self.df_y.plot(kind='hist', figsize=(8, 8))
+        plt.show()
 
     def split_date(self):
         """
@@ -29,7 +42,6 @@ class ArrangeData:
         self.df_x['release_month'] = months
         del self.df_x['release_date']
 
-
     def label_encoding(self):
         for col in ['production_companies', 'genres', 'original_language', 'production_countries']:
             unique_vals = list(self.df_x[col].unique())
@@ -40,15 +52,9 @@ class ArrangeData:
                 i += 1
             self.df_x[col] = self.df_x[col].map(lambda x: dict.get(x))
 
-
-    def one_hot_encoding(self):
-        """
-            using for original_language column
-        """
-        language_encoding = pd.get_dummies(self.df_x['original_language'], prefix='is')
-        self.df_x = pd.concat([self.df_x, language_encoding], axis=1)
+    def language_encoding(self):
+        self.df_x['isEnglish'] = self.df_x['original_language'].apply(lambda x: 1 if x == 'en' else 0)
         del self.df_x['original_language']
-
 
     def encode_categorical_list_cols(self):
         new_df = pd.DataFrame(columns=[], index=range(self.df_x.shape[0]))  # create an empty DataFrame
@@ -71,7 +77,6 @@ class ArrangeData:
         self.df_x.drop(['production_companies', 'genres', 'production_countries'], axis=1, inplace=True)
         self.df_x = pd.concat([self.df_x, new_df], axis=1)
 
-
     def getItems(self, organ, col):
         """
             calls in encode_categorical_list_cols method
@@ -88,29 +93,23 @@ class ArrangeData:
                 items.append(organ.split('"iso_3166_1": "')[-1].replace('", ', ''))
         return items
 
-
-    def fix_nulls(self):
+    def fix_nulls(self):  # **
         self.df_x['tagline'].fillna("", inplace=True)
         self.df_x['overview'].fillna("", inplace=True)
 
-
-    def convert_with_nltk(self):
+    def convert_with_nltk(self):  # **
         """
             a method using to convert overview, title and tagline columns to numeric
         """
         pass
 
-
     def normalize(self):
         norm_df_x = (self.df_x - self.df_x.mean()) / self.df_x.std()
         return norm_df_x
 
-
     def arrange(self):
         self.split_date()
-        self.fix_nulls()
-        # print(self.df_x.isnull().sum())
-        self.one_hot_encoding()
+        self.language_encoding()
         self.encode_categorical_list_cols()
         self.convert_with_nltk()  # should replace the for loop
         for col in self.df_x.columns:

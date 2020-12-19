@@ -1,6 +1,5 @@
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-import matplotlib.pyplot as plt
 
 from ArrangeData import *
 from LinearRegression import *
@@ -13,8 +12,8 @@ warnings.filterwarnings('ignore')
 
 
 df = pd.read_csv("tmdb_5000_movies.csv")
-columns = ['runtime', 'production_companies', 'genres', 'revenue', 'original_language', 'overview',
-         'production_countries', 'release_date', 'vote_count', 'vote_average', 'title', 'tagline', 'budget']
+columns = ['runtime', 'production_companies', 'genres', 'original_language', 'production_countries',
+           'release_date', 'vote_count', 'vote_average', 'budget']
 
 
 def compute_error(y_real, y_pred):  # The mean squared error
@@ -42,16 +41,10 @@ def avg_baseline_pred(y_train, shape):
     return avg_pred
 
 
-def show_lable_statistics(label):
-    print(label.describe())
-    label.plot(kind='hist', figsize=(8, 8))
-    plt.show()
-
-
 def main():
     data = ArrangeData(df, columns)
     norm_df_x, df_y = data.arrange()
-
+    """
     # split data to training set, testing set and validation set
 
     X_train, X_test, y_train, y_test = train_test_split(norm_df_x, df_y, test_size=0.2, random_state=1)
@@ -81,9 +74,7 @@ def main():
     y_pred = predict_NN(Ws, biases, X_test)
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err, "NN with 2 hidden layers and early stopping")
-
-    show_lable_statistics(df_y)
-
+    """
 
 if __name__ == '__main__':
     main()

@@ -41,22 +41,35 @@ def avg_baseline_pred(y_train, shape):
     return avg_pred
 
 
+def fix_skew(y_train, y_test, show=False):
+    y_train = np.log(y_train)
+    y_test = np.log(y_test)
+    if show:
+        y_train.plot(kind='hist', figsize=(8, 8))
+        plt.xlabel('Popularity')
+        plt.ylabel('# of movies')
+        plt.show()
+    return y_train, y_test
+
+
 def main():
     data = ArrangeData(df, columns)
     norm_df_x, df_y = data.arrange()
-    """
+
     # split data to training set, testing set and validation set
 
     X_train, X_test, y_train, y_test = train_test_split(norm_df_x, df_y, test_size=0.2, random_state=1)
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)  # 0.25 x 0.8 = 0.2
+    # X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)  # 0.25 x 0.8 = 0.2
+
+    y_train, y_test = fix_skew(y_train, y_test)
 
     # Linear Regression Model
     print("Linear Regression Model")
-    W, b, epochs, train_err, test_err = train_linreg(X_train, y_train, X_test, y_test, "ridge")
+    W, b, epochs, train_err, test_err = train_linreg(X_train, y_train, X_test, y_test)
     y_pred = predict_linreg(W, b, X_test)
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err, "Linear Regression")
-
+    """
     # Compare to the average baseline:
     print("Average Baseline")
     avg_pred = avg_baseline_pred(y_train, y_test.shape)

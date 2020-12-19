@@ -15,20 +15,20 @@ def train_linreg(X_train, y_train, X_test, y_test, regularization=None, optimize
     sess.run(tf.global_variables_initializer())
     train_err = []
     test_err = []
-    for i in range(50):
+    for i in range(100):
         shuffle_x = X_train.sample(frac=1)
         shuffle_y = y_train.reindex(list(shuffle_x.index.values))
         length = len(shuffle_x)
-        for j in range(121, length+2, 120):
-            batch_x = shuffle_x.iloc[j-121:min(j, length),:]
-            batch_y = shuffle_y.iloc[j-121:min(j, length),:]
+        for j in range(121, length+120, 120):
+            batch_x = shuffle_x.iloc[j-121:min(j, length), :]
+            batch_y = shuffle_y.iloc[j-121:min(j, length), :]
             sess.run(update, feed_dict={x: batch_x, y_: batch_y})
         print('Iteration:', i, ' W:', sess.run(W), ' b:', sess.run(b),
               ' train loss:', loss.eval(session=sess, feed_dict={x: X_train, y_: y_train}),
               ' test loss:', loss.eval(session=sess, feed_dict={x: X_test, y_: y_test}))
         train_err.append(loss.eval(session=sess, feed_dict = {x:X_train, y_:y_train}))
         test_err.append(loss.eval(session=sess, feed_dict = {x:X_test, y_:y_test}))
-    epochs = [*range(50)]
+    epochs = [*range(100)]
     return sess.run(W), sess.run(b), epochs, train_err, test_err
 
 
@@ -44,7 +44,7 @@ def get_loss(regularization, y, y_, W):
 
 def get_train_step(optimizer, loss):
     if optimizer is None:
-        train_step = tf.train.GradientDescentOptimizer(0.0001).minimize(loss)
+        train_step = tf.train.GradientDescentOptimizer(0.001).minimize(loss)
     else:  # optimizer = "adam"
         train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
     return train_step

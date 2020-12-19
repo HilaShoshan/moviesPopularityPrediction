@@ -58,7 +58,7 @@ class ArrangeData:
 
     def encode_categorical_list_cols(self):
         new_df = pd.DataFrame(columns=[], index=range(self.df_x.shape[0]))  # create an empty DataFrame
-        for col in ['production_companies', 'genres', 'production_countries']:  # the relevant columns
+        for col in ['genres', 'production_companies', 'production_countries']:  # the relevant columns
             index = -1
             for list in self.df_x[col]:  # its not really a list, but a string
                 index += 1

@@ -13,7 +13,7 @@ class ArrangeData:
         df = self.remove_bad_vals(df)
         self.df_x = df[columns]
         self.df_y = df[['popularity']]  # label
-        # self.show_lable_statistics()
+        # self.show_label_statistics()
 
     def remove_bad_vals(self, df):
         df.dropna(0, subset=['release_date', 'runtime'], inplace=True)
@@ -22,7 +22,7 @@ class ArrangeData:
         df.reset_index(drop=True, inplace=True)
         return df
 
-    def show_lable_statistics(self):
+    def show_label_statistics(self):
         print(self.df_y.describe())
         self.df_y.plot(kind='hist', figsize=(8, 8))
         plt.show()
@@ -42,7 +42,7 @@ class ArrangeData:
         self.df_x['release_month'] = months
         del self.df_x['release_date']
 
-    def label_encoding(self):
+    def label_encoding(self):  # not in use
         for col in ['production_companies', 'genres', 'original_language', 'production_countries']:
             unique_vals = list(self.df_x[col].unique())
             dict = {}  # gives each unique value in column a unique number
@@ -52,7 +52,7 @@ class ArrangeData:
                 i += 1
             self.df_x[col] = self.df_x[col].map(lambda x: dict.get(x))
 
-    def one_hot_encoding(self):
+    def one_hot_encoding(self):  # not in use
         """
             using for original_language column
         """
@@ -113,9 +113,5 @@ class ArrangeData:
         self.split_date()
         self.language_encoding()
         self.encode_categorical_list_cols()
-        for col in self.df_x.columns:
-            if not is_numeric_dtype(self.df_x[col]):
-                # print(col)
-                del self.df_x[col]
         norm_df_x = self.normalize()
         return norm_df_x, self.df_y

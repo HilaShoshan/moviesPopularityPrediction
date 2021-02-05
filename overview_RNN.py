@@ -9,15 +9,24 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
-def train_RNN(df):
-    x, y = arrange(df)
-    vocab, max_sentence_len = get_vocab(x)  # get all unique words in the whole overviews
+def arrange(df):
+    df.dropna(0, subset=['overview'], inplace=True)
+    df.reset_index(drop=True, inplace=True)
+    x = df[['overview']]
+    y = df[['popularity']]
+    return x, y
+
+
+curr_batch = 0
+
+def train_overview_RNN(df):
+    df_x, df_y = arrange(df)
+    vocab, max_sentence_len = get_vocab(df_x)  # get all unique words in the whole overviews
     num_options = len(vocab)
     num_features = max_sentence_len
     batch_size = 15
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=1)
+    x_train, x_test, y_train, y_test = train_test_split(df_x, df_y, test_size=0.2, random_state=1)
     num_input_examples = x_train.shape[0]  # number of examples = number of rows in x_train
-    curr_batch = 0
     cellsize = 30
     x = tf.placeholder(tf.float32, [None, num_features,  num_options])
     y = tf.placeholder(tf.float32, [None, 1])
@@ -40,7 +49,7 @@ def train_RNN(df):
         acc = 0
         curr_batch = 0
         while True:
-            batch_xs, batch_ys = next_batch(x_train, y_train, curr_batch, num_input_examples, batch_size, num_options, num_features, vocab)
+            batch_xs, batch_ys = next_batch(x_train, y_train, num_input_examples, batch_size, num_options, num_features, vocab)
             if batch_xs is None:
                 break
             else:
@@ -49,7 +58,8 @@ def train_RNN(df):
         print("step %d, training accuracy %g" % (ephoch, acc / curr_batch))
 
 
-def next_batch(x_train, y_train, curr_batch, num_input_examples, batch_size, num_options, num_features, vocab):
+def next_batch(x_train, y_train, num_input_examples, batch_size, num_options, num_features, vocab):
+    global curr_batch
     curr_range_start = curr_batch*batch_size
     if curr_range_start + batch_size >= num_input_examples:
         return (None, None)
@@ -68,27 +78,6 @@ def next_batch(x_train, y_train, curr_batch, num_input_examples, batch_size, num
     return (data_x, data_y)
 
 
-def arrange(df):
-    df.dropna(0, subset=['overview'], inplace=True)
-    df.reset_index(drop=True, inplace=True)
-    x = df[['overview']]
-    y = df[['popularity']]
-    return x, y
-
-
-def get_features(x_train, row):
-    text = x_train.at[row, 'overview']
-    words = np.array(text.split())  # create an array of all the words in the overview
-    unique_words = np.unique(words)  # an array of unique words, to use as features
-    num_options = len(unique_words)
-    encoding_mat = pd.get_dummies(unique_words)
-    features = []
-    for word in words:
-        encode = list(encoding_mat.loc[:, word])
-        features.append(encode)  # add the one-hot-encoding vector that represents the word as feature
-    return features, num_options
-
-
 def get_vocab(x):
     vocab = []
     max_sentence_len = 0
@@ -102,3 +91,4 @@ def get_vocab(x):
             if word not in vocab:
                 vocab.append(word)
     return vocab, max_sentence_len
+

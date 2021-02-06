@@ -1,6 +1,6 @@
 # Recurrent Neural Network - what we use for sequences
 # use overview column as features
-
+import learn as learn
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 
@@ -34,6 +34,7 @@ def train_overview_RNN(df):
     output, _ = tf.nn.dynamic_rnn(lstm_cell, x, dtype=tf.float32)
     output = tf.transpose(output, [1, 0, 2])
     last = output[-1]
+    learn.models.linear_regression(last, y)
     W = tf.Variable(tf.truncated_normal([cellsize, num_options], stddev=0.1))
     b = tf.Variable(tf.constant(0.1, shape=[num_options]))
     z = tf.matmul(last, W) + b

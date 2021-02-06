@@ -4,7 +4,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from ArrangeData import *
 from LinearRegression import *
 from NeuralNetwork import *
-from overview_RNN import *
+from tensor1_RNN import *
 
 
 df = pd.read_csv("tmdb_5000_movies.csv")
@@ -49,7 +49,7 @@ def fix_skew(y_train, y_test, show=False):  # not in use
 
 
 def main():
-    """
+
     data = ArrangeData(df, columns)
     norm_df_x, df_y = data.arrange()
 
@@ -84,7 +84,7 @@ def main():
     y_pred = predict_NN(Ws, biases, X_test)
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err, "NN with 2 hidden layers and early stopping")
-"""
+
     print("RNN on overview column")
     train_overview_RNN(df)
 

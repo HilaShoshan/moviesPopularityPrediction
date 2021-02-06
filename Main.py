@@ -6,6 +6,8 @@ from LinearRegression import *
 from NeuralNetwork import *
 from RNN import *
 
+import chazutsu
+r = chazutsu.datasets.MovieReview.polarity().download()
 
 df = pd.read_csv("tmdb_5000_movies.csv")
 columns = ['runtime', 'production_companies', 'genres', 'original_language', 'production_countries',

@@ -4,7 +4,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from ArrangeData import *
 from LinearRegression import *
 from NeuralNetwork import *
-from RNN import *
+from overview_RNN import *
 
 import chazutsu
 r = chazutsu.datasets.MovieReview.polarity().download()
@@ -88,7 +88,7 @@ def main():
     plot_err(epochs, train_err, test_err, "NN with 2 hidden layers and early stopping")
 """
     print("RNN on overview column")
-    train_RNN(df)
+    train_overview_RNN(df)
 
 
 if __name__ == '__main__':

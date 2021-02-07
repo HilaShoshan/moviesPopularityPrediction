@@ -105,13 +105,8 @@ class ArrangeData:
         self.df_x['tagline'].fillna("", inplace=True)
         self.df_x['overview'].fillna("", inplace=True)
 
-    def normalize(self):
-        norm_df_x = (self.df_x - self.df_x.mean()) / self.df_x.std()
-        return norm_df_x
-
     def arrange(self):
         self.split_date()
         self.language_encoding()
         self.encode_categorical_list_cols()
-        norm_df_x = self.normalize()
-        return norm_df_x, self.df_y
+        return self.df_x, self.df_y

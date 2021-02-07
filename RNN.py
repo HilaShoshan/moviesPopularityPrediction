@@ -4,8 +4,8 @@ import re
 
 from keras.preprocessing.text import Tokenizer
 from keras.utils import np_utils
-from keras.models import Sequential , load_model
-from keras.layers import Dense , Dropout , LSTM , Bidirectional
+from keras.models import Sequential, load_model
+from keras.layers import Dense, Dropout, LSTM, Bidirectional
 from keras.preprocessing.sequence import pad_sequences
 
 from collections import Counter
@@ -13,36 +13,47 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.model_selection import train_test_split
 
+import tensorflow as tf
+from tensorflow.keras import datasets, layers, models
 
-def train_RNN(df):
-    
-    df['Sentiment'] = [1 if x > 4 else 0 for x in df.popularity]
-    X, y = (df['overview'].values.astype("str"), df['Sentiment'].values)
+import matplotlib.pyplot as plt
 
-    tk = Tokenizer(lower = True)
-    tk.fit_on_texts(X)
-    X_seq = tk.texts_to_sequences(X)
-    X_pad = pad_sequences(X_seq, maxlen=100, padding='post')
-    X_train, X_test, y_train, y_test = train_test_split(X_pad, y, test_size = 0.25, random_state = 1)
 
-    batch_size = 64
-    X_train2 = X_train[batch_size:]
-    y_train2 = y_train[batch_size:]
-    X_valid = X_train[:batch_size]
-    y_valid = y_train[:batch_size]
+def train_RNN(df_x, df_y):
+    df_x['overview'] = df_x['overview'].values.astype("str")
+
+    tk = Tokenizer(lower=True)
+    tk.fit_on_texts(df_x['overview'].values)
+    df_x['overview'] = tk.texts_to_sequences(df_x['overview'].values)
+    X_pad = pad_sequences(df_x['overview'].values, maxlen=100, padding='post')
+    df_x = pd.concat([df_x, pd.DataFrame(X_pad)], axis=1)
+    X_train, X_test, y_train, y_test = train_test_split(df_x, df_y, test_size=0.2, random_state=1)
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)  # 0.25 x 0.8 = 0.2
 
     # LSTM Model
-
-    vocabulary_size = len(tk.word_counts.keys())+1
+    vocabulary_size = len(tk.word_counts.keys()) + 1
     max_words = 100
     embedding_size = 32
     model = Sequential()
-    model.add(Embedding(vocabulary_size, embedding_size, input_length=max_words))
+    model.add(layers.Embedding(vocabulary_size, embedding_size, input_length=max_words))
     model.add(LSTM(100))
-    model.add(Dense(1, activation='sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.add(Dense(1, activation='relu'))
+    model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(learning_rate=0.001))
 
+    # model.summary()
     # fitting the LSTM model
-    model.fit(X_train2, y_train2, validation_data = (X_valid,y_valid) , batch_size=batch_size, epochs=10)
+    history = model.fit(X_train.iloc[:, -100:], y_train.values,
+                        validation_data=(X_val.iloc[:, -100:], y_val.values), batch_size=60, epochs=50, shuffle=True)
 
-    scores = model.evaluate(X_train,y_train,verbose=0)
+    X_train['overview'] = model.predict(X_train.iloc[:, -100:])
+    print(model.predict(X_train.iloc[:, -100:]))
+
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper right')
+    plt.show()
+
+    scores = model.evaluate(X_test.iloc[:, -100:].values, y_test.values, verbose=2)

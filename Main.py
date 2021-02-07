@@ -6,10 +6,9 @@ from LinearRegression import *
 from NeuralNetwork import *
 from RNN import *
 
-
-df = pd.read_csv("tmdb_5000_movies.csv")
+df = pd.read_csv("drive/MyDrive/Colab Notebooks/tmdb_5000_movies.csv")
 columns = ['runtime', 'production_companies', 'genres', 'original_language', 'production_countries',
-           'release_date', 'vote_count', 'vote_average', 'budget']
+           'release_date', 'vote_count', 'vote_average', 'budget', 'overview']
 
 
 def compute_error(y_real, y_pred):
@@ -18,15 +17,15 @@ def compute_error(y_real, y_pred):
     print("MSE:", mse)
     print("MAE:", mean_absolute_error(y_real, y_pred))
     print("rMSE:", rmse)
-    print("R^2 score:", 1-rmse)
+    print("R^2 score:", 1 - rmse)
 
 
 def plot_err(epochs, train_err, test_err, model_name):
     plt.xlabel('epochs')
     plt.ylabel('prediction error')
-    plt.title('Train/Test error '+model_name)
-    plt.plot(epochs, train_err, color='blue', linewidth=3,  label='train error')
-    plt.plot(epochs, test_err, color='red', linewidth=3,  label='test error')
+    plt.title('Train/Test error ' + model_name)
+    plt.plot(epochs, train_err, color='blue', linewidth=3, label='train error')
+    plt.plot(epochs, test_err, color='red', linewidth=3, label='test error')
     plt.legend()
     plt.show()
 
@@ -48,10 +47,16 @@ def fix_skew(y_train, y_test, show=False):  # not in use
     return y_train, y_test
 
 
-def main():
+def normalize(df_x):
+    norm_df_x = (df_x - df_x.mean()) / df_x.std()
+    return norm_df_x
 
+
+def main():
     data = ArrangeData(df, columns)
-    norm_df_x, df_y = data.arrange()
+    df_x, df_y = data.arrange()
+
+    norm_df_x = normalize(df_x.drop(['overview'], axis=1))
 
     # split data to training set, testing set and validation set
 
@@ -59,7 +64,7 @@ def main():
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1)  # 0.25 x 0.8 = 0.2
 
     # y_train, y_test = fix_skew(y_train, y_test)
-    
+
     # Linear Regression Model
     print("Linear Regression Model")
     W, b, epochs, train_err, test_err = train_linreg(X_train, y_train, X_test, y_test, regularization="lasso")
@@ -71,7 +76,7 @@ def main():
     print("Average Baseline")
     avg_pred = avg_baseline_pred(y_train, y_test.shape)
     compute_error(y_test, avg_pred)
-    
+
     # NN Model
     print("NN Model")
     Ws, biases, epochs, train_err, test_err = train_NN(X_train, y_train, X_test, y_test, num_epochs=100)
@@ -85,10 +90,10 @@ def main():
     compute_error(y_test, y_pred)
     plot_err(epochs, train_err, test_err, "NN with 2 hidden layers and early stopping")
 
+    # RNN with LSTM Model
     print("RNN on overview column")
-    train_RNN(df)
+    train_RNN(df_x, df_y)
 
 
 if __name__ == '__main__':
     main()
-
